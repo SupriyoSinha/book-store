@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: bookstore-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bookstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  api:
+    build: .
+    container_name: bookstore-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/bookstore
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  frontend:
+    image: node:18
+    container_name: bookstore-ui
+    working_dir: /app
+    volumes:
+      - ./bookstore-ui:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
