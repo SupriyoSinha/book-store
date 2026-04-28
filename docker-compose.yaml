@@ -1,12 +1,11 @@
 version: "3.9"
-
 services:
   db:
-    image: postgres:15
+    image: postgres:18
     container_name: bookstore-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: bookstore
     ports:
       - "5432:5432"
@@ -24,19 +23,19 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/bookstore
+      DATABASE_URL: postgresql://postgres:password@db:5432/bookstore
     ports:
       - "8000:8000"
     volumes:
       - .:/app
     command: >
       sh -c "alembic upgrade head &&
-             python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+             python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
 
   frontend:
     image: node:18
     container_name: bookstore-ui
-    working_dir: /app
+    working_dir: .
     volumes:
       - ./bookstore-ui:/app
     ports:

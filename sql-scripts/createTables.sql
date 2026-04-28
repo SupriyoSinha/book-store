@@ -29,10 +29,3 @@ ALTER TABLE books
 ADD COLUMN total_copies INT DEFAULT 1,
 ADD COLUMN available_copies INT DEFAULT 1;
 -- PURCHASES TABLE
-CREATE TABLE purchases (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL,
-    book_id UUID NOT NULL,
-    quantity INT NOT NULL CHECK (quantity > 0),
-    total_price NUMERIC(10,2) NOT NULL CHECK (total_price >= 0),
-    purchased_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

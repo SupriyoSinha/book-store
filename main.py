@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.v1 import book_routes
+from api.v1 import book_routes, user_routes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Bookstore API")
@@ -13,3 +13,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(book_routes.router, prefix="/api/v1")
+app.include_router(user_routes.router, prefix="/api/v1")
